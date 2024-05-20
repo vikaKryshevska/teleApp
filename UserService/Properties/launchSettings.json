@@ -27,7 +27,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "ServiceBAPIv2": {
+      "UserServiceAPI": {
         "commandName": "Project",
         "launchBrowser": true,
         "launchUrl": "swagger",

@@ -10,7 +10,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/v1/Services/{everything}",
-      "SwaggerKey": "ServiceAAPIv1"
+      "SwaggerKey": "TelephoneServiceAPI"
     },
     {
       "DownstreamPathTemplate": "/api/v2/Administrators/{everything}",
@@ -22,7 +22,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/v2/Administrators/{everything}",
-      "SwaggerKey": "ServiceBAPIv2"
+      "SwaggerKey": "UserServiceAPI"
     },
     {
       "DownstreamPathTemplate": "/api/v2/Authentication/{everything}",
@@ -34,7 +34,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/v2/Authentication/{everything}",
-      "SwaggerKey": "ServiceBAPIv2"
+      "SwaggerKey": "UserServiceAPI"
     },
     {
       "DownstreamPathTemplate": "/api/v2/Subscribers/{everything}",
@@ -46,25 +46,25 @@
         }
       ],
       "UpstreamPathTemplate": "/api/v2/Subscribers/{everything}",
-      "SwaggerKey": "ServiceBAPIv2"
+      "SwaggerKey": "UserServiceAPI"
     }
   ],
   "SwaggerEndPoints": [
     {
-      "Key": "ServiceAAPIv1",
+      "Key": "TelephoneServiceAPI",
       "Config": [
         {
-          "Name": "ServiceAAPIv1",
+          "Name": "TelephoneServiceAPI",
           "Version": "v1",
           "Url": "http://telephoneservice/swagger/v1/swagger.json"
         }
       ]
     },
     {
-      "Key": "ServiceBAPIv2",
+      "Key": "UserServiceAPI",
       "Config": [
         {
-          "Name": "ServiceBAPIv2",
+          "Name": "UserServiceAPI",
           "Version": "v2",
           "Url": "http://userservice/swagger/v2/swagger.json"
         }

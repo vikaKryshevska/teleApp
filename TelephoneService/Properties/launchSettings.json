@@ -27,7 +27,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "ServiceAAPIv1": {
+      "TelephoneServiceAPI": {
         "commandName": "Project",
         "launchBrowser": true,
         "launchUrl": "swagger",

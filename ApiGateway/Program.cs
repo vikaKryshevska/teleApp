@@ -43,54 +43,6 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 
 
 
-
-
-/*builder.Configuration.AddOcelotWithSwaggerSupport(options =>
-{
-    options.Folder = "Configuration";
-});
-builder.Services.AddSwaggerForOcelot(builder.Configuration);
-
-
-*/
-
-
-/*builder.Services
-    .AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(o =>
-    {
-        o.SaveToken = true;
-        o.RequireHttpsMetadata = false;
-        o.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-            RoleClaimType = ClaimTypes.Role
-        };
-    });
-
-
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminPolicy", policy =>
-    {
-        policy.RequireRole("ADMIN");
-    });
-});
-
-*/
-
-
 var app = builder.Build();
 
 
@@ -104,8 +56,8 @@ if (app.Environment.IsDevelopment())
     //app.UseSwaggerUI();
     app.UseSwaggerUI(setup =>
     {
-        setup.SwaggerEndpoint("v1/swagger.json", "ServiceAAPIv1");
-        setup.SwaggerEndpoint("v2/swagger.json", "ServiceBAPIv2");
+        setup.SwaggerEndpoint("v1/swagger.json", "TelephoneServiceAPI");
+        setup.SwaggerEndpoint("v2/swagger.json", "UserServiceAPI");
     });
 }
 

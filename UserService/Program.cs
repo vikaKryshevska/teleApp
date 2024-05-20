@@ -169,7 +169,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v2/swagger.json", "ServiceBAPIv2"));
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v2/swagger.json", "UserServiceAPI"));
     using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<TelephoneDbContext>();
     context.Database.Migrate();
