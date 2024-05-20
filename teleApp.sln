@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService", "UserService\UserService.csproj", "{5D64517E-4DD4-4182-870B-EF1F0E7273D9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csproj", "{19F866E0-CA58-4573-A28F-7DCE7E10706F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F981ABFC-C34C-4BD5-9D46-AA294683F8D9}"
+	ProjectSection(SolutionItems) = preProject
+		ApiGateway\ApiGateway.csproj = ApiGateway\ApiGateway.csproj
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{DB23A82C-C989-4225-A6F2-B03DD3A6EBD4}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{7521C1C9-3469-452C-AF00-F807C9DAA7BD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelephoneService", "TelephoneService\TelephoneService.csproj", "{406BC836-EF25-4E47-B331-92EA29F8FC3E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5D64517E-4DD4-4182-870B-EF1F0E7273D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D64517E-4DD4-4182-870B-EF1F0E7273D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D64517E-4DD4-4182-870B-EF1F0E7273D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D64517E-4DD4-4182-870B-EF1F0E7273D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19F866E0-CA58-4573-A28F-7DCE7E10706F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19F866E0-CA58-4573-A28F-7DCE7E10706F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19F866E0-CA58-4573-A28F-7DCE7E10706F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19F866E0-CA58-4573-A28F-7DCE7E10706F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB23A82C-C989-4225-A6F2-B03DD3A6EBD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB23A82C-C989-4225-A6F2-B03DD3A6EBD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB23A82C-C989-4225-A6F2-B03DD3A6EBD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB23A82C-C989-4225-A6F2-B03DD3A6EBD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7521C1C9-3469-452C-AF00-F807C9DAA7BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7521C1C9-3469-452C-AF00-F807C9DAA7BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7521C1C9-3469-452C-AF00-F807C9DAA7BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7521C1C9-3469-452C-AF00-F807C9DAA7BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{406BC836-EF25-4E47-B331-92EA29F8FC3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{406BC836-EF25-4E47-B331-92EA29F8FC3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{406BC836-EF25-4E47-B331-92EA29F8FC3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{406BC836-EF25-4E47-B331-92EA29F8FC3E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3429C74C-58B0-4E74-B758-9DC78ADCC296}
+	EndGlobalSection
+EndGlobal

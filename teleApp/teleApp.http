@@ -1,0 +1,6 @@
+@teleApp_HostAddress = http://localhost:5188
+
+GET {{teleApp_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

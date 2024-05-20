@@ -1,0 +1,55 @@
+version: '3.4'
+
+services:
+  userservice:
+    image: ${DOCKER_REGISTRY-}userservice
+    build:
+      context: userservice
+      dockerfile: Dockerfile
+    ports:
+        - "8081:8081"
+        - "8080:8080"
+
+    depends_on:
+      - telephone-db
+  
+  telephone-db:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    container_name: telephone-db
+    environment:
+      - MSSQL_SA_PASSWORD=1234abcD
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+    volumes:
+      - "./data:/var/opt/mssql/data"
+
+  telephoneservice:
+    image: ${DOCKER_REGISTRY-}telephoneservice
+    build:
+      context: telephoneservice
+      dockerfile: Dockerfile
+    ports:
+        - "5000:5000"
+        - "5001:5001"
+
+    depends_on:
+      - telephone-db
+
+  apigateway:
+    image: ${DOCKER_REGISTRY-}apigateway
+    build:
+      context: apigateway
+      dockerfile: Dockerfile
+    ports:
+        - "5050:5050"
+        - "5054:5054"
+
+    depends_on:
+      - telephone-db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+volumes:
+  sqlserver-data:
+
