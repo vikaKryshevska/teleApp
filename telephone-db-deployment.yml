@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telephone-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telephone-db
+  template:
+    metadata:
+      labels:
+        app: telephone-db
+    spec:
+      containers:
+        - name: telephone-db
+          image: mcr.microsoft.com/mssql/server:2022-latest
+          ports:
+            - containerPort: 1433
+          env:
+            - name: MSSQL_SA_PASSWORD
+              value: "1234abcD"
+            - name: ACCEPT_EULA
+              value: "Y"
+      volumes:
+        - name: sqlserver-data
+          emptyDir: {}

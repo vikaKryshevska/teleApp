@@ -61,9 +61,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UsePathBase("/gateway");
-
-app.UseRouting();
+//app.UseRouting();
 
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 

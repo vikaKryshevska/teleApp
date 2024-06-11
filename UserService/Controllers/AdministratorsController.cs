@@ -15,7 +15,6 @@ using UserService.Services;
 
 namespace UserService.Controllers
 {
-
     [ApiVersion("2.0")]
     [Authorize(Roles = "ADMIN")]
     [Route("api/v{version:apiVersion}/Administrators")]
@@ -24,12 +23,13 @@ namespace UserService.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly TelephoneDbContext _context;
+        private readonly RedisService _redisService;
 
-
-        public AdministratorsController(UserManager<IdentityUser> userManager, TelephoneDbContext context)
+        public AdministratorsController(UserManager<IdentityUser> userManager, TelephoneDbContext context, RedisService redisService)
         {
             _userManager = userManager;
             _context = context;
+            _redisService = redisService;
         }
 
         // GET: api/Administrators
@@ -48,31 +48,33 @@ namespace UserService.Controllers
             return Ok(admins);
         }
 
-
-        /// <summary>
-        /// Get a subscriber by id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns>Returns subscriber's data"</returns>
-
-        /// <response code="404">Returns no subscriber with this id</response>
-
-
+        // GET: api/Administrators/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<IdentityUser>> GetSubscriber(string id)
         {
+            // Check cache first
+            var cachedUser = _redisService.GetValue<IdentityUser>(id);
+            if (cachedUser != null)
+            {
+                return Ok(cachedUser);
+            }
+
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound(); // User not found
             }
-            return user;
+
+            // Cache the user data
+            _redisService.SetValue(id, user);
+            Response.Headers.Add("Cache-Control", "public, max-age=3600"); // Cache for 1 hour
+            Response.Headers.Add("ETag", GenerateETag(user)); // Generate ETag
+
+
+            return Ok(user);
         }
 
-
-
-
-        // GET: api/Administrators/5
+        // GET: api/Administrators/unpaid-accounts
         [HttpGet("unpaid-accounts")]
         public async Task<ActionResult> GetUnpaidAccounts()
         {
@@ -91,11 +93,8 @@ namespace UserService.Controllers
             }
         }
 
-
-
-
-
-        [HttpGet("{id} /user-unpaid-accounts")]
+        // GET: api/Administrators/{id}/user-unpaid-accounts
+        [HttpGet("{id}/user-unpaid-accounts")]
         public async Task<ActionResult<Bill>> GetUnpaidAccount(string id)
         {
             try
@@ -114,38 +113,17 @@ namespace UserService.Controllers
             }
         }
 
-
-
-        /// <summary>
-        /// Add a subscriber
-        /// </summary>
-        /// <param name="registerRequestModel"></param>
-        /// <returns>Returns message = "Registration successful"</returns>
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///     POST /create-subscriber
-        ///     {
-        ///      "name": "string",
-        ///        "password": "string"
-        ///       }
-        ///
-        /// </remarks>
-        /// <response code="400">Returns error while creating</response>
-
-        // POST: api/Administrators
+        // POST: api/Administrators/create-subscriber
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("create-subscriber")]
         public async Task<ActionResult<string>> CreateSubscriber([FromBody] RegisterRequestModel registerRequestModel)
         {
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
             var user = new User { UserName = registerRequestModel.Name };
-
             var result = await _userManager.CreateAsync(user, registerRequestModel.Password);
 
             if (!result.Succeeded)
@@ -161,10 +139,13 @@ namespace UserService.Controllers
             _context.Subscribers.Add(subscriber);
             await _context.SaveChangesAsync();
 
+            // Cache the new subscriber
+            _redisService.SetValue(user.Id, user);
+
             return Ok(new { message = "Registration successful" });
         }
 
-        // DELETE: api/Administrators/5
+        // DELETE: api/Administrators/{id}/delete-subscriber
         [HttpDelete("{id}/delete-subscriber")]
         public async Task<IActionResult> DeleteSubscriber(string id)
         {
@@ -173,7 +154,6 @@ namespace UserService.Controllers
             {
                 return NotFound(); // User not found
             }
-
 
             // Check if the user is a subscriber
             if (await _userManager.IsInRoleAsync(user, UserRoles.SUBSCRIBER))
@@ -188,6 +168,8 @@ namespace UserService.Controllers
                         _context.Subscribers.Remove(subscriber);
                         await _context.SaveChangesAsync();
 
+                        // Remove from cache
+                        _redisService.SetValue<IdentityUser>(user.Id, null);
                     }
                     return NoContent(); // Successfully deleted
                 }
@@ -196,13 +178,17 @@ namespace UserService.Controllers
                     // Failed to delete user, return error messages
                     return BadRequest(result.Errors);
                 }
-
-
             }
             else
             {
                 return Forbid(); // User is not a subscriber, forbid deletion
             }
+        }
+
+        private string GenerateETag(IdentityUser user)
+        {
+            // Generate ETag based on user properties
+            return user.Id.GetHashCode().ToString();
         }
     }
 }

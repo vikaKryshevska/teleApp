@@ -18,14 +18,16 @@ namespace UserService.Controllers
     {
         private readonly TelephoneDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly RedisService _redisService;
 
-        public SubscribersController(TelephoneDbContext context, UserManager<IdentityUser> userManager)
+        public SubscribersController(TelephoneDbContext context, UserManager<IdentityUser> userManager, RedisService redisService)
         {
             _context = context;
             _userManager = userManager;
+            _redisService = redisService;
         }
 
-        // GET: api/subscriber/{subscriberId}/bills
+        // GET: api/subscriber/unpaid-bills
         [HttpGet("unpaid-bills")]
         public async Task<IActionResult> GetBills()
         {
@@ -37,9 +39,21 @@ namespace UserService.Controllers
                     return Unauthorized(); // User not authenticated or ID not found in claims
                 }
 
+                // Check cache first
+                var cacheKey = $"unpaid-bills:{userId}";
+                var cachedBills = _redisService.GetValue<List<Bill>>(cacheKey);
+                if (cachedBills != null)
+                {
+                    return Ok(cachedBills);
+                }
+
                 var records = await _context.Bills
                     .Where(r => r.SubscriberId == userId && r.Status == false)
                     .ToListAsync();
+
+                // Cache the results
+                _redisService.SetValue(cacheKey, records);
+
                 return Ok(records);
             }
             catch (Exception ex)
@@ -48,18 +62,8 @@ namespace UserService.Controllers
             }
         }
 
-
-
-        /// <summary>
-        /// Use the service
-        /// </summary>
-        /// <param name="serviceId"></param>
-        /// <response code="400">Returns error while creating</response>
-        ///  <response code="204">Returns service succesfuly added</response>
-
-
+        // POST: api/subscribers/add/{serviceId}
         [HttpPost("add/{serviceId}")]
-
         public async Task<IActionResult> AddServiceToSubscriber(string serviceId)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -76,8 +80,6 @@ namespace UserService.Controllers
             }
 
             var subscriber = await _context.Subscribers.FindAsync(userId);
-
-
             if (subscriber == null)
             {
                 return NotFound();
@@ -88,6 +90,7 @@ namespace UserService.Controllers
             {
                 subscriber.Services = new List<Service>();
             }
+
             // Add the new service to the list of services associated with the subscriber
             subscriber.Services.Add(service);
 
@@ -110,6 +113,10 @@ namespace UserService.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+
+                // Invalidate cache
+                var cacheKey = $"unpaid-bills:{userId}";
+                _redisService.SetValue<List<Bill>>(cacheKey, null);
             }
             catch (DbUpdateException e)
             {
@@ -119,8 +126,7 @@ namespace UserService.Controllers
             return NoContent();
         }
 
-
-
+        // PUT: api/subscribers/{id}/pay-bill
         [HttpPut("{id}/pay-bill")]
         public async Task<IActionResult> PayBill(string id)
         {
@@ -135,6 +141,11 @@ namespace UserService.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+
+                // Invalidate cache
+                var userId = bill.SubscriberId;
+                var cacheKey = $"unpaid-bills:{userId}";
+                _redisService.SetValue<List<Bill>>(cacheKey, null);
             }
             catch (DbUpdateException e)
             {
@@ -143,6 +154,5 @@ namespace UserService.Controllers
 
             return NoContent();
         }
-
     }
 }

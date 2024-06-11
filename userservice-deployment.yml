@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userservice
+  template:
+    metadata:
+      labels:
+        app: userservice
+    spec:
+      containers:
+        - name: userservice
+          image: userservice:latest   # Update with your image name
+          ports:
+            - containerPort: 8081
+            - containerPort: 8080
+          env:
+            # Your environment variables here if any
+          # Add volume mounts if needed
+      # Add volume claims if needed
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: userservice
+spec:
+  selector:
+    app: userservice
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

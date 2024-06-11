@@ -14,7 +14,6 @@ using Models.Entities;
 
 namespace UserService.Controllers
 {
-
     [ApiVersion("2.0")]
     [Route("api/v{version:apiVersion}/Authentication")]
     [ApiController]
@@ -25,26 +24,23 @@ namespace UserService.Controllers
         private readonly IJwtService _jwtService;
         private readonly IConfiguration _configuration;
         private readonly RoleSeed _roleSeeder;
+        private readonly RedisService _redisService;
 
-        public AuthenticationController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, IJwtService jwtService, RoleSeed roleSeeder)
+        public AuthenticationController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, IJwtService jwtService, RoleSeed roleSeeder, RedisService redisService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _jwtService = jwtService;
             _roleSeeder = roleSeeder;
+            _redisService = redisService;
         }
-
-
-
 
         // Route -> Register
         [HttpPost]
         [Route("register")]
-
         public async Task<ActionResult<string>> Register([FromBody] RegisterRequestModel registerRequestModel)
         {
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -61,9 +57,11 @@ namespace UserService.Controllers
 
             await _userManager.AddToRoleAsync(user, UserRoles.ADMIN);
 
+            // Cache the user data
+            _redisService.SetValue(user.Id, user);
+
             return Ok(new { message = "Registration successful" });
         }
-
 
         // Route -> Login
         [HttpPost]
@@ -75,14 +73,15 @@ namespace UserService.Controllers
             {
                 return Unauthorized("Invalid username or password.");
             }
+
+            // Cache the user data
+            _redisService.SetValue(user.Id, user);
+
             var role = await _userManager.GetRolesAsync(user);
             var token = _jwtService.GenerateToken(user, role.FirstOrDefault());
             await _userManager.SetAuthenticationTokenAsync(user, "", "", token);
             return Ok(new { Token = token });
-
         }
-
-
 
         [HttpGet("profile")]
         [Authorize] // This requires an authenticated user with a valid token
@@ -90,9 +89,15 @@ namespace UserService.Controllers
         {
             // Access the user's claims
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userName = User.FindFirst(ClaimTypes.Name)?.Value;
 
-            // Access a specific claim
+            // Check cache first
+            var cachedUser = _redisService.GetValue<IdentityUser>(userId);
+            if (cachedUser != null)
+            {
+                return Ok(cachedUser);
+            }
+
+            var userName = User.FindFirst(ClaimTypes.Name)?.Value;
             var role = User.FindFirst(ClaimTypes.Actor)?.Value;
 
             // Example of role-based authorization
@@ -108,11 +113,6 @@ namespace UserService.Controllers
             }
         }
 
-
-
-
-
-
         // Route For Seeding my roles to DB
         [HttpPost]
         [Route("seed-roles")]
@@ -127,9 +127,6 @@ namespace UserService.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Failed to seed roles: " + ex.Message);
             }
-
         }
-
-
     }
 }

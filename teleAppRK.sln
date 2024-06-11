@@ -18,6 +18,14 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelephoneService", "TelephoneService\TelephoneService.csproj", "{406BC836-EF25-4E47-B331-92EA29F8FC3E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "kubernetes", "kubernetes", "{017C1289-8CD7-49BF-ABB1-598E7C9B4B1C}"
+	ProjectSection(SolutionItems) = preProject
+		userservice-deployment.yml = userservice-deployment.yml
+		redis-deployment.yml = redis-deployment.yml
+		telephone-db-deployment.yml = telephone-db-deployment.yml
+		telephoneservice-deployment.yml = telephoneservice-deployment.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

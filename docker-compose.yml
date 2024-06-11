@@ -1,4 +1,7 @@
+
 version: '3.4'
+
+
 
 services:
   userservice:
@@ -12,6 +15,7 @@ services:
 
     depends_on:
       - telephone-db
+      - redis
   
   telephone-db:
     image: "mcr.microsoft.com/mssql/server:2022-latest"
@@ -35,21 +39,14 @@ services:
 
     depends_on:
       - telephone-db
+      - redis
 
-  apigateway:
-    image: ${DOCKER_REGISTRY-}apigateway
-    build:
-      context: apigateway
-      dockerfile: Dockerfile
+
+
+  redis:
+    image: redis:alpine
     ports:
-        - "5050:5050"
-        - "5054:5054"
-
-    depends_on:
-      - telephone-db
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - "6379:6379"
 
 volumes:
   sqlserver-data:
-

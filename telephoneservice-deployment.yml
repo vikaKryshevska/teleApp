@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telephoneservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telephoneservice
+  template:
+    metadata:
+      labels:
+        app: telephoneservice
+    spec:
+      containers:
+        - name: telephoneservice
+          image: telephoneservice:latest  # Update with your image name
+          ports:
+            - containerPort: 5000
+            - containerPort: 5001
+          env:
+            # Your environment variables here if any
+          # Add volume mounts if needed
+      # Add volume claims if needed
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: telephoneservice
+spec:
+  selector:
+    app: telephoneservice
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+    - protocol: TCP
+      port: 5001
+      targetPort: 5001

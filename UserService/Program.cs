@@ -105,6 +105,8 @@ builder.Services
     .AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<TelephoneDbContext>()
     .AddDefaultTokenProviders();
+builder.Services.AddScoped<RedisService>(); // Register RedisService for dependency injection
+
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -176,7 +178,7 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
